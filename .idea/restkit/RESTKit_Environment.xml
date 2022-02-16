@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RESTKit_Environment">
+    <option name="globalHeaderList">
+      <list>
+        <BKV>
+          <option name="enabled" value="true" />
+          <option name="key" value="test" />
+          <option name="value" value="test" />
+        </BKV>
+      </list>
+    </option>
+  </component>
+</project>
