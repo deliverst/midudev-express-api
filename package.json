@@ -1,12 +1,28 @@
 {
   "name": "midudev-express-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "https://www.youtube.com/watch?v=o85OkeVtm7k",
   "main": "index.js",
   "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/deliverst/midudev-express-api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/deliverst/midudev-express-api/issues"
+  },
+  "homepage": "https://github.com/deliverst/midudev-express-api#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  },
+  "dependencies": {
+    "express": "^4.17.2"
+  }
 }
