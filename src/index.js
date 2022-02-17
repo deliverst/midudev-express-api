@@ -97,7 +97,7 @@ app.use((req, res) => {
     console.log(req.path)
 })
 
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log(`Se esta escuchando por el puerto ${PORT}`)
 })
