@@ -11,8 +11,11 @@ mongoose.connect(connectionString, {
     }).catch(err => {
     console.error(err)
 })
-
-
+//
+// process.on('uncaughtException'), () => {
+//     mongoose.connection.disconnect()
+// }
+//
 
 
 

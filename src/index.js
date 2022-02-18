@@ -4,17 +4,20 @@ require('dotenv').config()
 const http = require('http')
 const express = require('express')
 const app = express()
-const logger = require('./loggerMiddleware')
-const cors = require('cors')
 const Note = require('./models/Note')
 
-app.use(cors())
+// middelwars
+const cors = require('cors')
+const notFound = require('./middlewares/404')
+const logger = require('./middlewares/loggerMiddleware')
+const handleError = require('./middlewares/handleError')
 
-let notes = []
-
-// MIDELWARES
+// middelwars exe
 app.use(express.json())
 app.use(logger)
+app.use(cors())
+app.use('/images', express.static('src/images'))
+
 
 // HOME
 app.get('/', (req, res) => {
@@ -50,11 +53,9 @@ app.get('/api/notes/:id', (req, res, next) => {
 // DELETE
 app.delete('/api/delete/:id', (req, res, next) => {
     const {id} = req.params
-    // console.log(id)
-    console.log('holi')
-    Note.findByIdAndRemove(id).then(res => {
-        res.status(204).end()
-    }).catch(err => next(err))
+    Note.findByIdAndDelete(id)
+        .then(() => res.status(204).end())
+        .catch(err => next(err))
 })
 
 // PUT
@@ -66,11 +67,11 @@ app.put('/api/update/:id', (req, res, next) => {
         body: body,
         lastUpdate: new Date()
     }
-    Note.findByIdAndUpdate(id, newNoteInfo, {new: true}).then(result => {
-        // res.status(204).end()
-        res.json(result)
-    }).catch(err => next(err))
+    Note.findByIdAndUpdate(id, newNoteInfo, {new: true})
+        .then(result => {res.json(result)})
+        .catch(err => next(err))
 })
+
 // POST
 app.post('/api/notes', (req, res) => {
     let info = req.body
@@ -87,30 +88,15 @@ app.post('/api/notes', (req, res) => {
     })
     // const ids = notes.map(note => note.id)
 
-    newNote.save().then(savedNote => {
-        res.json(savedNote)
-    })
+    newNote.save()
+        .then(savedNote => {res.json(savedNote)})
 })
 
 // 404
-app.use((req, res) => {
-    res.status(404).json({
-        error: 'Not Found'
-    })
-    console.log(req.path)
-})
+app.use(notFound)
 
 // CATCH ERROR MIDDLEWEAR
-app.use((err, req, res, next) => {
-    console.log('2')
-    console.error(err.name)
-    if (err.name === 'CastError') {
-        res.status(400).send({err: 'id used is malformed'})
-    } else {
-        res.status(500).end()
-    }
-
-})
+app.use(handleError)
 
 // LISTEN PORT
 app.listen(process.env.PORT, () => {
