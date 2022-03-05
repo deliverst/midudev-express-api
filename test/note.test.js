@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 const Note = require("../src/models/Note");
-// const {response} = require("express");
 const {server} = require('../src/index')
 const {initialNotes, api, getAllContetFromNotes, getAllTitlesFromNotes} = require('./helpers')
 
@@ -36,18 +35,18 @@ describe('POST | Testing all notes', () => {
             .expect('Content-Type', /application\/json/)
     })
 
-    test('2.- Only return two notes', async () => {
+    test('2.- Check insertion initalNotes in databse', async () => {
         const {response} = await getAllContetFromNotes()
         expect(response.body).toHaveLength(initialNotes.length)
 
     })
 
-    test('3.- La primera nota es de mi para se mas chingon', async () => {
+    test('3.- Check if one note content body of one note', async () => {
         const {body} = await getAllTitlesFromNotes()
         expect(body).toContain('La revancha del principe charro')
     })
 
-    test('4.- Nueva nota como post', async () => {
+    test('4.- Creation new note', async () => {
         const newNote = {
             title: "Division Minúscula",
             body: "Extrañando Casa"
@@ -64,11 +63,8 @@ describe('POST | Testing all notes', () => {
         expect(contents).toContain(newNote.content)
 
     })
-})
 
-describe('DELETE | Method Delete Notes', () => {
-
-    test('1.- Nota without content is add', async () => {
+    test('5.- Creation new nota without content is add (Error)', async () => {
         const newNote = {}
 
         await api.post('/api/notes')
@@ -79,8 +75,11 @@ describe('DELETE | Method Delete Notes', () => {
         expect(response.body).toHaveLength(initialNotes.length)
 
     })
+})
 
-    test('2.- Delete functionality petar', async () => {
+describe('DELETE | Method Delete Notes', () => {
+
+    test('1.- Delete first note add before and check if was delete', async () => {
         const {response: firstResponse} = await getAllContetFromNotes()
         const {body: notes} = firstResponse
         const noteToDelete = notes[0]
@@ -93,7 +92,7 @@ describe('DELETE | Method Delete Notes', () => {
         // expect(contents).not.toContain(noteToDelete.content)
     })
 
-    test('3.- Delete a note that dont exist', async () => {
+    test('2.- Delete a note that dont exist (Error)', async () => {
         await api
             .delete('/api/notes/123')
             .expect(400)
