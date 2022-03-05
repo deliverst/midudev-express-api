@@ -11,6 +11,7 @@ const cors = require('cors')
 const notFound = require('./middlewares/404')
 const logger = require('./middlewares/loggerMiddleware')
 const handleError = require('./middlewares/handleError')
+const {json} = require("express");
 
 // middelwars exe
 app.use(express.json())
@@ -18,18 +19,19 @@ app.use(logger)
 app.use(cors())
 app.use('/images', express.static('src/images'))
 
-
 // HOME
 app.get('/', (req, res) => {
     res.send('<h1>Hola muchachin</h1>')
 })
 
 //GET ALL NOTES
-app.get('/api/notes', (req, res) => {
-    Note.find({}).then(notes => {
+app.get('/api/notes', async (req, res) => {
+    try {
+        const notes = await Note.find({})
         res.json(notes)
-    })
-    // res.json(notes)
+    } catch (e) {
+        console.log(e)
+    }
 })
 
 // GET
@@ -51,11 +53,20 @@ app.get('/api/notes/:id', (req, res, next) => {
 })
 
 // DELETE
-app.delete('/api/delete/:id', (req, res, next) => {
-    const {id} = req.params
-    Note.findByIdAndDelete(id)
-        .then(() => res.status(204).end())
-        .catch(err => next(err))
+app.delete('/api/notes/:id', async (req, res, next) => {
+    // const {id} = req.params
+    // console.log(id)
+    // Note.findByIdAndDelete(id)
+    //     .then(() => res.status(204).end())
+    //     .catch(err => next(err))
+
+    try {
+        const {id} = req.params
+        await Note.findByIdAndDelete(id)
+        res.status(204).end()
+    } catch (e) {
+        next(e)
+    }
 })
 
 // PUT
@@ -73,7 +84,7 @@ app.put('/api/update/:id', (req, res, next) => {
 })
 
 // POST
-app.post('/api/notes', (req, res) => {
+app.post('/api/notes', async (req, res) => {
     let info = req.body
 
     if (!info || !req.body.body || !req.body.title) {
@@ -86,10 +97,16 @@ app.post('/api/notes', (req, res) => {
         date: new Date().toLocaleString(),
         lastUpdate: null
     })
-    // const ids = notes.map(note => note.id)
 
-    newNote.save()
-        .then(savedNote => {res.json(savedNote)})
+    try {
+        const savedNote = await newNote.save()
+        res.json(savedNote)
+    } catch (error) {
+        next(error)
+    }
+
+    // newNote.save()
+    //     .then(savedNote => {res.json(savedNote)})
 })
 
 // 404
@@ -99,7 +116,7 @@ app.use(notFound)
 app.use(handleError)
 
 // LISTEN PORT
-app.listen(process.env.PORT, () => {
+const server = app.listen(process.env.PORT, () => {
     console.log(`Se esta escuchando por el puerto ${process.env.PORT}`)
 })
 
@@ -108,3 +125,5 @@ app.listen(process.env.PORT, () => {
 //     // res.end('como estas muchacho')
 //     res.end(JSON.stringify(notes))
 // })
+
+module.exports = {app, server}

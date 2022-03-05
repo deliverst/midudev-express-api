@@ -1,13 +1,16 @@
 const mongoose = require('mongoose')
 require('dotenv').config()
-const connectionString = `mongodb+srv://midudev:${process.env.PASS}@midudev6api.ylvog.mongodb.net/midudev6api?retryWrites=true&w=majority`
+const {NODE_ENV, MONGO_DB_UNIT_TEST, MONGO_DB_UNIT_PROD} = process.env
+// console.log(NODE_ENV)
+const connectionString = NODE_ENV === 'test' ? MONGO_DB_UNIT_TEST : MONGO_DB_UNIT_PROD
 
 // connection to database with mongooso
 mongoose.connect(connectionString, {
     useNewUrlParser: true,
 })
     .then(() => {
-        console.log('Database Connected')
+        const actualConnection = NODE_ENV === 'test' ? 'Development' : 'Production'
+        console.log(`Database Connected to ${actualConnection}`)
     }).catch(err => {
     console.error(err)
 })

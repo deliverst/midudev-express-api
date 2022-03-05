@@ -4,9 +4,10 @@
   "description": "https://www.youtube.com/watch?v=o85OkeVtm7k",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/index.js",
-    "start": "node src/index.js",
-    "test": "jest --verbose"
+    "dev": "NODE_ENV=development nodemon src/index.js",
+    "start": "NODE_ENV=production node src/index.js",
+    "test": "NODE_ENV=test jest --verbose --silent test/note.test.js",
+    "test:watch": "npm run test -- --watch"
   },
   "keywords": [],
   "author": "",
@@ -21,7 +22,8 @@
   "homepage": "https://github.com/deliverst/midudev-express-api#readme",
   "devDependencies": {
     "jest": "27.5.1",
-    "nodemon": "2.0.15"
+    "nodemon": "2.0.15",
+    "supertest": "^6.2.2"
   },
   "jest": {
     "testEnvironment": "node"
