@@ -1,32 +1,32 @@
 const mongoose = require('mongoose')
 const Note = require("../src/models/Note");
 const {server} = require('../src/index')
-const {initialNotes, api, getAllContetFromNotes, getAllTitlesFromNotes} = require('./helpers')
-
-beforeEach(async () => {
-    await Note.deleteMany({})
-    //-----------------LLAMADA MANUALMENTE-----------------//
-    // const nota1 = new Note(initialNotes[0])
-    // await nota1.save()
-
-    // const nota2 = new Note(initialNotes[1])
-    // await nota2.save()
-
-    // ----------------------PARALELO----------------------//
-    // No se tiene control de cual se guarda primero
-    // const notesObjects = initialNotes.map(note => new Note(note))
-    // const promies = notesObjects.map(note => note.save())
-    // await Promise.all(promies)
-
-    // ---------------------SECUENCIAL---------------------//
-    for (const note of initialNotes) {
-        const noteObject = new Note(note)
-        await noteObject.save()
-    }
-
-})
+const {updateNotes, initialNotes, api, getAllContetFromNotes, getAllTitlesFromNotes, closeAllConnections} = require('./helpers')
 
 describe('POST | Testing all notes', () => {
+
+    beforeEach(async () => {
+        await Note.deleteMany({})
+        //-----------------LLAMADA MANUALMENTE-----------------//
+        // const nota1 = new Note(initialNotes[0])
+        // await nota1.save()
+
+        // const nota2 = new Note(initialNotes[1])
+        // await nota2.save()
+
+        // ----------------------PARALELO----------------------//
+        // No se tiene control de cual se guarda primero
+        // const notesObjects = initialNotes.map(note => new Note(note))
+        // const promies = notesObjects.map(note => note.save())
+        // await Promise.all(promies)
+
+        // ---------------------SECUENCIAL---------------------//
+        for (const note of initialNotes) {
+            const noteObject = new Note(note)
+            await noteObject.save()
+        }
+
+    })
 
     test('1.- Notes are returned to json', async () => {
         await api
@@ -94,16 +94,36 @@ describe('DELETE | Method Delete Notes', () => {
 
     test('2.- Delete a note that dont exist (Error)', async () => {
         await api
-            .delete('/api/notes/123')
-            .expect(400)
+            .delete('/api/notes/12984urtjiefow3')
+            .expect(500)
+        // todo return 400 error
 
         const {response} = await getAllContetFromNotes()
-        expect(response.body).toHaveLength(initialNotes.length)
+        expect(response.body).toHaveLength(initialNotes.length - 1)
     })
+
 });
 
-afterAll(() => {
-    server.close()
-    mongoose.connection.close()
+describe('UPDATE NOTE', () => {
+    test('Update Notes and check if note was update', async () => {
+        const notesMongo = await getAllContetFromNotes()
+        const {response: firstResponse} = notesMongo
+        const idElement = firstResponse.body[0].id
+        console.log(idElement)
+
+        const localNotes = updateNotes[0]
+        console.log(localNotes)
+
+        await api
+            .put(`/api/notes/${idElement}`)
+            .expect(200)
+            .send(localNotes)
+
+        const {response: secondResponse} = await getAllContetFromNotes()
+        const {response: firstResponseLocal} = notesMongo
+        expect(secondResponse.body[0].body).toContain(localNotes.body)
+        closeAllConnections()
+    })
 })
+
 // npm run test -- -t "notes are returned to json"

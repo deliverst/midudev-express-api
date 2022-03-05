@@ -4,7 +4,11 @@ const noteSchema = new mongoose.Schema({
     title: String,
     body: String,
     date: Date,
-    lastUpdate: Date
+    lastUpdate: Date,
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'User'
+    }
 })
 
 noteSchema.set('toJSON', ({

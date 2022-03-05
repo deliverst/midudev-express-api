@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "NODE_ENV=development nodemon src/index.js",
     "start": "NODE_ENV=production node src/index.js",
-    "test": "NODE_ENV=test jest --verbose --silent test/note.test.js",
+    "test": "NODE_ENV=test PORT=3002 jest --verbose --silent test/user.test.js",
     "test:watch": "npm run test -- --watch"
   },
   "keywords": [],
@@ -29,6 +29,7 @@
     "testEnvironment": "node"
   },
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "cors": "2.8.5",
     "dotenv": "^16.0.0",
     "express": "4.17.2",
