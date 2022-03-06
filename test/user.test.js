@@ -7,7 +7,7 @@ describe('Creating one user', () => {
     beforeEach(async () => {
         await User.deleteMany({})
         const passwordHash = await bcrypt.hash("pass", 10)
-        const user = new User({name: 'Javier', username: 'deliverst', passwordHash})
+        const user = new User({name: 'JAVIER 1', username: 'deliverst', passwordHash})
         await user.save()
     })
 
@@ -16,7 +16,7 @@ describe('Creating one user', () => {
         console.log(userAtStart)
 
         const newUser = {
-            username: 'ragnarok',
+            username: 'RAGNAROK',
             name: 'rogelio',
             password: 'tw1tch'
         }
@@ -33,8 +33,29 @@ describe('Creating one user', () => {
 
         const usernames = usersAtEnd.map(u => u.username)
         expect(usernames).toContain(newUser.username)
-        closeAllConnections()
+
     })
 
+    test('Creation fails of with proper status code and mesange if username is alredy taken', async () => {
+        const usersAtStart = await getUsers()
+
+        const newUser = {
+            username: 'deliverst',
+            name: 'JAVIER 2',
+            password: 'Ajays20-3oi'
+        }
+
+        const result = await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(400)
+            .expect('Content-Type', /application\/json/)
+
+        expect(result.body.errors.username.message).toContain("`username` to be unique")
+
+        const usersAtEnd = await getUsers()
+        expect(usersAtStart).toHaveLength(usersAtEnd.length)
+        closeAllConnections()
+    })
 
 });

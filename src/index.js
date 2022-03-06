@@ -3,7 +3,6 @@ require('dotenv').config()
 
 const express = require('express')
 const app = express()
-const Note = require('./models/Note')
 const usersRouter = require('./controllers/users')
 const notesRouter = require('./controllers/notes')
 
@@ -22,9 +21,7 @@ app.use(cors())
 app.use('/images', express.static('src/images'))
 
 // HOME
-app.get('/', (req, res) => {
-    res.send('<h1>Hola guapo</h1>')
-})
+app.get('/', (req, res) => {res.send('<h1>Hola guapo</h1>')})
 
 // NOTES
 app.use('/api/notes', notesRouter)
