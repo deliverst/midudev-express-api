@@ -5,14 +5,13 @@ const express = require('express')
 const app = express()
 const usersRouter = require('./controllers/users')
 const notesRouter = require('./controllers/notes')
+const loginRouter = require('./controllers/login')
 
 // middelwars
 const cors = require('cors')
 const notFound = require('./middlewares/404')
 const logger = require('./middlewares/loggerMiddleware')
 const handleError = require('./middlewares/handleError')
-
-
 
 // middleware exe
 app.use(express.json())
@@ -28,6 +27,9 @@ app.use('/api/notes', notesRouter)
 
 // USERS
 app.use('/api/users', usersRouter)
+
+// LOGIN
+app.use('/login', loginRouter)
 
 // 404
 app.use(notFound)
